@@ -29,8 +29,7 @@ contract SwissGoldBuy {
     function buy() public onlyOwner {
         require(!burned, "Contract could be processed only once");
 
-//        swissGoldExecutor.buy(buyer, amount);
-        swissGoldExecutor.buy(buyer);
+        swissGoldExecutor.buy(msg.sender, buyer, amount);
 
         burned = true;
     }

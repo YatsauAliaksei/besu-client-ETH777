@@ -29,7 +29,7 @@ contract SwissGoldTransfer {
     function transfer() public onlyOwner {
         require(!burned, "Contract could be processed only once");
 
-        swissGoldExecutor.transfer(from, to, amount);
+        swissGoldExecutor.transfer(msg.sender, from, to, amount);
 
         burned = true;
     }

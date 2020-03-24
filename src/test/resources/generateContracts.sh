@@ -18,11 +18,11 @@ COMMON_CONTRACTS=( ERC1820Registry )
 
 for item in ${GOLD_CONTRACTS[*]}
     do
-        web3j solidity generate -a=contracts/compiled/$item.abi -b=contracts/compiled/$item.bin -o=../../main/java/ -p=by.mrj.gold.contract
+        web3j solidity generate -a=contracts/compiled/$item.abi -b=contracts/compiled/$item.bin -o=../../main/java/ -p=by.mrj.besu.gold.contract
     done
 
 for item in ${COMMON_CONTRACTS[*]}
     do
-        web3j solidity generate -a=contracts/compiled/$item.abi -b=contracts/compiled/$item.bin -o=../../main/java/ -p=by.mrj.contract
+        web3j solidity generate -a=contracts/compiled/$item.abi -b=contracts/compiled/$item.bin -o=../../main/java/ -p=by.mrj.besu.contract
     done
 

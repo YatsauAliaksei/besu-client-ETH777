@@ -320,7 +320,7 @@ contract ERC777 is Context, IERC777, IERC20 {
         bytes memory userData,
         bytes memory operatorData
     )
-    public
+    internal
     {
         require(account != address(0), "ERC777: mint to the zero address");
 
@@ -328,6 +328,7 @@ contract ERC777 is Context, IERC777, IERC20 {
         _totalSupply = _totalSupply.add(amount);
         _balances[account] = _balances[account].add(amount);
 
+        // fixme: changed ack to false. Not sure we need this for now
         _callTokensReceived(operator, address(0), account, amount, userData, operatorData, true);
 
         emit Minted(operator, account, amount, userData, operatorData);

@@ -5,19 +5,42 @@ import "./openzeppelin/token/ERC777/ERC777.sol";
 contract SwissGoldToken is ERC777 {
 
     address public owner;
+    address[] private allowed;
 
-    constructor(address[] memory defaultOperators , address erc1820Address)
-        ERC777("SwissGold", "SwGld", defaultOperators, erc1820Address ) public {
+    constructor(address[] memory defaultOperators, address erc1820Address)
+    ERC777("SwissGold", "SwGld", defaultOperators, erc1820Address) public {
 
-        owner = msg.sender;
+        owner = _msgSender();
+        allowed.push(owner);
+    }
+
+    function mint(address mintTo, uint amount) public allowedAddresses {
+        _mint(owner, mintTo, amount, "", "");
+    }
+
+    function approveFor(address holder, address spender, uint256 value) public allowedAddresses {
+        _approve(holder, spender, value);
+    }
+
+    function addAllowed(address newAllowed) public onlyOwner {
+        allowed.push(newAllowed);
+    }
+
+    modifier allowedAddresses() {
+        address currentAddress = msg.sender;
+        for (uint i = 0; i < allowed.length; i++) {
+            if (allowed[i] == currentAddress) {
+                _;
+                return;
+            }
+        }
+
+        revert("Insufficient privileges");
+        _;
     }
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Insufficient privileges");
         _;
-    }
-
-    function mint(uint amount) public {
-        _mint(_msgSender(), _msgSender(), amount, "", "");
     }
 }

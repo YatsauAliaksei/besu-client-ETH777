@@ -32,6 +32,7 @@ public class NetworkBaseContractService {
     public final static String ERC1820_REGISTRY = "ERC1820Registry";
 
     private final TransactionManager transactionManager;
+
     @Getter
     private final String swissGoldTokenAddress;
     @Getter

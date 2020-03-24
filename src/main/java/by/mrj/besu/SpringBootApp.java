@@ -26,7 +26,7 @@ public class SpringBootApp {
             .run(args);
 
         Checker checker = context.getBean(Checker.class);
-        checker.check();
+        checker.checkOperations();
 
         log.info("Closing");
     }

@@ -6,35 +6,42 @@ contract SwissGoldExecutor {
 
     SwissGoldToken private swissGoldToken;
     address private owner;
-    address private tokenAddress;
     uint public limit;
 
     constructor (address _tokenAddress, uint _limit) public {
         swissGoldToken = SwissGoldToken(_tokenAddress);
-        tokenAddress = _tokenAddress;
-
-//        require(swissGoldToken.owner() == msg.sender, "SwissGoldToken was not found ");
 
         owner = msg.sender;
         limit = _limit;
     }
 
-    function buy(address buyer) public {
-//        SwissGoldToken(tokenAddress).mint(10);
-        swissGoldToken.mint(10);
-//        swissGoldToken.send(buyer, amount, "");
+    function buy(address god, address buyer, uint amount) public onlyOwnerOrGodProvided(god) checkLimit(amount) {
+        address adr = address(this);
+
+        swissGoldToken.mint(god, amount);
+        swissGoldToken.approveFor(god, adr, amount);
+
+        if (!swissGoldToken.transferFrom(god, buyer, amount)) {
+            revert("Transfer failed");
+        }
     }
 
-    function sell(address seller, uint256 amount) public checkLimit(amount) onlyOwner {
-        swissGoldToken.operatorBurn(seller, amount, "", "");
+    function sell(address god, address seller, uint amount) public onlyOwnerOrGodProvided(god) checkLimit(amount) {
+        swissGoldToken.approveFor(seller, address(this), amount);
+
+        if (!swissGoldToken.transferFrom(seller, address(this), amount)) {
+            revert("Transfer failed");
+        }
+
+        swissGoldToken.burn(amount, "");
     }
 
-    function transfer(address seller, address buyer, uint amount) public checkLimit(amount) onlyOwner {
-        swissGoldToken.operatorSend(seller, buyer, amount, "", "");
-    }
+    function transfer(address god, address seller, address buyer, uint amount) public onlyOwnerOrGodProvided(god) checkLimit(amount) {
+        swissGoldToken.approveFor(seller, address(this), amount);
 
-    function getTokenAddress() public view returns (address) {
-        return address(SwissGoldToken(tokenAddress));
+        if (!swissGoldToken.transferFrom(seller, buyer, amount)) {
+            revert("Transfer failed");
+        }
     }
 
     modifier checkLimit(uint amount) {
@@ -42,12 +49,10 @@ contract SwissGoldExecutor {
         _;
     }
 
-    function tokenOwner() public view returns (address) {
-        return swissGoldToken.owner();
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Insufficient privileges to transfer from");
+    modifier onlyOwnerOrGodProvided(address god) {
+        require(msg.sender == owner || god == owner, "Insufficient privileges to transfer from");
         _;
     }
+
+    event ErrorMsg(string msg, bytes error);
 }

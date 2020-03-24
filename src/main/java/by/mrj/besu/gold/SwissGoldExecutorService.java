@@ -1,8 +1,10 @@
 package by.mrj.besu.gold;
 
 import by.mrj.besu.gold.contract.SwissGoldExecutor;
+import by.mrj.besu.gold.contract.SwissGoldToken;
 import by.mrj.besu.service.ContractLoader;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,8 @@ public class SwissGoldExecutorService {
     @Getter
     private final String address;
 
-    public SwissGoldExecutorService(NetworkBaseContractService networkBaseContractService, ContractLoader contractLoader) throws IOException {
+    @SneakyThrows
+    public SwissGoldExecutorService(NetworkBaseContractService networkBaseContractService, ContractLoader contractLoader) {
 
         log.info("Loading SwissGoldExecutor contract...");
 
@@ -31,5 +34,8 @@ public class SwissGoldExecutorService {
         if (!this.swissGoldExecutor.isValid()) {
             throw new IllegalStateException("Invalid contract loaded. Contract address [" + address + "]");
         }
+
+        var swissGoldToken = contractLoader.load(networkBaseContractService.getSwissGoldTokenAddress(), SwissGoldToken.class);
+        swissGoldToken.addAllowed(address).send();
     }
 }

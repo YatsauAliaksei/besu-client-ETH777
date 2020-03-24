@@ -24,51 +24,30 @@ public class Checker {
 
     private final GodCredentials credentials;
     private final SwissGoldTokenService swissGoldTokenService;
-    private final SwissGoldExecutorService swissGoldExecutorService;
     private final AccountService accountService;
     private final Web3jClient web3jClient;
     private final ContractService contractService;
 
     @SneakyThrows
-    public void check() {
+    public void checkOperations() {
 
         long amount = 10L;
 
         log.info("Starting check with amount - {}", amount);
 
-        mintPlusCheck(amount);
-
         // INITIAL
         String newClientAddress = createNewClient();
         logBalance(newClientAddress);
 
-        log.info("Direct token call");
-        swissGoldTokenService.getSwissGoldToken().send(newClientAddress, BigInteger.valueOf(amount), "".getBytes()).send();
-        logBalance(newClientAddress);
-
-        String tokenAddress = swissGoldExecutorService.getSwissGoldExecutor().getTokenAddress().send();
-        log.info("Token address: {}", tokenAddress);
-
-        String tokenOwner = swissGoldExecutorService.getSwissGoldExecutor().tokenOwner().send();
-        log.info("Token Owner address: {}", tokenOwner);
-
-        log.info("Direct executor call");
-//        swissGoldExecutorService.getSwissGoldExecutor().buy(newClientAddress, BigInteger.valueOf(amount)).send();
-        swissGoldExecutorService.getSwissGoldExecutor().buy(newClientAddress).send();
-        mintPlusCheck(amount);
-        logBalance(newClientAddress);
-
-        // BUY
         // fixme: should be done in other way. Contract should be created initially and address saved.
         // todo: Create mechanism which destroys contracts if they were not executed after specified time limit.
+        log.info("BUY OP");
         contractService.createBuy(newClientAddress, amount, BigInteger.ONE).join().buy().send();
         logBalance(newClientAddress);
 
-        // SELL
+        log.info("SELL OP");
         contractService.createSell(newClientAddress, amount, BigInteger.ONE).join().sell().send();
         logBalance(newClientAddress);
-
-        mintPlusCheck(amount);
 
         // 2nd client
         String newClientAddress1 = createNewClient();
@@ -78,6 +57,7 @@ public class Checker {
         contractService.createBuy(newClientAddress, amount, BigInteger.ONE).join().buy().send();
         logBalance(newClientAddress);
 
+        log.info("TRANSFER OP");
         // TRANSFER
         contractService.createTransfer(newClientAddress, newClientAddress1, amount).join().transfer().send();
         logBalance(newClientAddress);
@@ -88,20 +68,6 @@ public class Checker {
         BigInteger ethBalance = getEthBalance(address);
         BigInteger goldBalance = getGoldBalance(address);
         log.info("\nAddress: {}\nBalance ETH: [{}], GoldToken: [{}]", address, ethBalance, goldBalance);
-    }
-
-    private void mintPlusCheck(long amount) throws Exception {
-        String address = credentials.getCredentials().getAddress();
-        BigInteger balance = getGoldBalance(address);
-
-        log.info("Balance before [{}] - {}", address, balance);
-
-        swissGoldTokenService.getSwissGoldToken().mint(BigInteger.valueOf(amount)).sendAsync().join();
-
-        address = credentials.getCredentials().getAddress();
-        balance = getGoldBalance(address);
-
-        log.info("Balance after [{}] - {}", address, balance);
     }
 
     private String createNewClient() {
