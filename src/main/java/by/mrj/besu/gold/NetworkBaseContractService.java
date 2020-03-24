@@ -2,8 +2,8 @@ package by.mrj.besu.gold;
 
 import by.mrj.besu.config.ApplicationProperties;
 import by.mrj.besu.contract.ERC1820Registry;
-import by.mrj.besu.gold.contract.SwissGoldExecutor;
-import by.mrj.besu.gold.contract.SwissGoldToken;
+import by.mrj.besu.gold.contract.SGoldExecutor;
+import by.mrj.besu.gold.contract.SGoldToken;
 import by.mrj.besu.service.ContractLoader;
 import by.mrj.besu.web3j.GodCredentials;
 import by.mrj.besu.web3j.Web3jClient;
@@ -11,8 +11,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.web3j.tx.FastRawTransactionManager;
-import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.DefaultGasProvider;
 
@@ -21,8 +19,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
-import static by.mrj.besu.gold.SwissGoldExecutorService.SWISS_GOLD_EXECUTOR;
-import static by.mrj.besu.gold.SwissGoldTokenService.SWISS_GOLD_TOKEN;
+import static by.mrj.besu.gold.SGoldExecutorService.S_GOLD_EXECUTOR;
+import static by.mrj.besu.gold.SGoldTokenService.S_GOLD_TOKEN;
 import static java.util.stream.Collectors.toMap;
 
 @Slf4j
@@ -34,9 +32,9 @@ public class NetworkBaseContractService {
     private final TransactionManager transactionManager;
 
     @Getter
-    private final String swissGoldTokenAddress;
+    private final String sGoldTokenAddress;
     @Getter
-    private final String swissGoldExecutorAddress;
+    private final String sGoldExecutorAddress;
 
     public NetworkBaseContractService(ApplicationProperties applicationProperties, Web3jClient web3jClient,
                                       GodCredentials credentials, TransactionManager transactionManager,
@@ -49,54 +47,54 @@ public class NetworkBaseContractService {
 
         var erc1820Address = deployErc1820(contractLoader, nameToAddress.get(ERC1820_REGISTRY));
 
-        this.swissGoldTokenAddress = deploySwissGoldTokenContract(web3jClient, credentials,
-            nameToAddress.get(SWISS_GOLD_TOKEN), erc1820Address);
+        this.sGoldTokenAddress = deploySGoldTokenContract(web3jClient, credentials,
+            nameToAddress.get(S_GOLD_TOKEN), erc1820Address);
 
-        this.swissGoldExecutorAddress = deploySwissGoldExecutorContract(web3jClient,
-            nameToAddress.get(SWISS_GOLD_EXECUTOR), this.swissGoldTokenAddress, applicationProperties.getContract().getLimit());
+        this.sGoldExecutorAddress = deploySGoldExecutorContract(web3jClient,
+            nameToAddress.get(S_GOLD_EXECUTOR), this.sGoldTokenAddress, applicationProperties.getContract().getLimit());
     }
 
     /**
-     * Creates {@link SwissGoldToken} contract if doesn't exist
+     * Creates {@link SGoldToken} contract if doesn't exist
      */
-    private String deploySwissGoldExecutorContract(Web3jClient web3jClient,
-                                                   String swissGoldExecutorAddress, String tokenAddress, long limit) throws IOException {
-        if (StringUtils.hasText(swissGoldExecutorAddress)) {
-            return swissGoldExecutorAddress;
+    private String deploySGoldExecutorContract(Web3jClient web3jClient,
+                                                   String sGoldExecutorAddress, String tokenAddress, long limit) throws IOException {
+        if (StringUtils.hasText(sGoldExecutorAddress)) {
+            return sGoldExecutorAddress;
         }
 
-        log.info("SwissGoldExecutor contract address was not found. Creating...");
+        log.info("SGoldExecutor contract address was not found. Creating...");
 
-        var swissGoldExecutor = SwissGoldExecutor.deploy(web3jClient.getWeb3j(), transactionManager,
+        var sGoldExecutor = SGoldExecutor.deploy(web3jClient.getWeb3j(), transactionManager,
             new DefaultGasProvider(), tokenAddress, BigInteger.valueOf(limit)).sendAsync().join();
 
-        swissGoldExecutorAddress = swissGoldExecutor.getContractAddress();
-        log.info("SwissGoldExecutor contract created with address [{}]", swissGoldExecutorAddress);
+        sGoldExecutorAddress = sGoldExecutor.getContractAddress();
+        log.info("SGoldExecutor contract created with address [{}]", sGoldExecutorAddress);
 
-        if (!swissGoldExecutor.isValid()) {
-            throw new IllegalStateException("Invalid contract loaded. Contract address [" + swissGoldExecutorAddress + "]");
+        if (!sGoldExecutor.isValid()) {
+            throw new IllegalStateException("Invalid contract loaded. Contract address [" + sGoldExecutorAddress + "]");
         }
 
-        return swissGoldExecutorAddress;
+        return sGoldExecutorAddress;
     }
 
     /**
-     * Creates {@link SwissGoldToken} contract if doesn't exist
+     * Creates {@link SGoldToken} contract if doesn't exist
      */
-    private String deploySwissGoldTokenContract(Web3jClient web3jClient, GodCredentials credentials, String goldTokenAddress, String erc1820Address) throws IOException {
+    private String deploySGoldTokenContract(Web3jClient web3jClient, GodCredentials credentials, String goldTokenAddress, String erc1820Address) throws IOException {
         if (StringUtils.hasText(goldTokenAddress)) {
             return goldTokenAddress;
         }
 
-        log.info("SwissGoldToken contract address was not found. Creating...");
+        log.info("SGoldToken contract address was not found. Creating...");
 
-      var swissGoldToken = SwissGoldToken.deploy(web3jClient.getWeb3j(), transactionManager, new DefaultGasProvider(),
+      var sGoldToken = SGoldToken.deploy(web3jClient.getWeb3j(), transactionManager, new DefaultGasProvider(),
             List.of(credentials.getCredentials().getAddress()), erc1820Address).sendAsync().join();
 
-        goldTokenAddress = swissGoldToken.getContractAddress();
-        log.info("SwissGoldToken contract created with address [{}]", goldTokenAddress);
+        goldTokenAddress = sGoldToken.getContractAddress();
+        log.info("SGoldToken contract created with address [{}]", goldTokenAddress);
 
-        if (!swissGoldToken.isValid()) {
+        if (!sGoldToken.isValid()) {
             throw new IllegalStateException("Invalid contract loaded. Contract address [" + goldTokenAddress + "]");
         }
 

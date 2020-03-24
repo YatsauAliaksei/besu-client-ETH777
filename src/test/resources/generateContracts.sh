@@ -10,8 +10,8 @@ if [ -z "$(ls -A contracts/compiled)" ]; then
 fi
 
 GOLD_CONTRACTS=(
-          SwissGoldToken SwissGoldSell
-          SwissGoldBuy SwissGoldTransfer SwissGoldExecutor
+          SGoldToken SGoldSell
+          SGoldBuy SGoldTransfer SGoldExecutor
    )
 
 COMMON_CONTRACTS=( ERC1820Registry )

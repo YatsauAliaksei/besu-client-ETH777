@@ -1,11 +1,11 @@
 pragma solidity ^0.6.0;
 
-import "./SwissGoldExecutor.sol";
+import "./SGoldExecutor.sol";
 
-contract SwissGoldBuy {
+contract SGoldBuy {
 
     address private issuer;
-    SwissGoldExecutor private swissGoldExecutor;
+    SGoldExecutor private sGoldExecutor;
 
     address private buyer;
     bool private burned = false;
@@ -13,7 +13,7 @@ contract SwissGoldBuy {
     uint private price;
 
     constructor (address executorAddress, address _buyer, uint _amount, uint _price) public {
-        swissGoldExecutor = SwissGoldExecutor(executorAddress);
+        sGoldExecutor = SGoldExecutor(executorAddress);
 
         issuer = msg.sender;
         buyer = _buyer;
@@ -29,7 +29,7 @@ contract SwissGoldBuy {
     function buy() public onlyOwner {
         require(!burned, "Contract could be processed only once");
 
-        swissGoldExecutor.buy(msg.sender, buyer, amount);
+        sGoldExecutor.buy(msg.sender, buyer, amount);
 
         burned = true;
     }

@@ -28,11 +28,11 @@ gold:
       # if not specified new will be created. Don't forget to save new address from logs
       address:
 
-    - name: SwissGoldToken
+    - name: SGoldToken
       # if not specified new will be created. Don't forget to save new address from logs
       address:
 
-    - name: SwissGoldExecutor
+    - name: SGoldExecutor
       # if not specified new will be created. Don't forget to save new address from logs
       address:
 

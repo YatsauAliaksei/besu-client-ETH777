@@ -2,13 +2,13 @@ pragma solidity ^0.6.0;
 
 import "./openzeppelin/token/ERC777/ERC777.sol";
 
-contract SwissGoldToken is ERC777 {
+contract SGoldToken is ERC777 {
 
     address public owner;
     address[] private allowed;
 
     constructor(address[] memory defaultOperators, address erc1820Address)
-    ERC777("SwissGold", "SwGld", defaultOperators, erc1820Address) public {
+    ERC777("SGold", "SwGld", defaultOperators, erc1820Address) public {
 
         owner = _msgSender();
         allowed.push(owner);
