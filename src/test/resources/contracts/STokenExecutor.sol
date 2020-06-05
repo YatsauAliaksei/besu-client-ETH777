@@ -1,15 +1,15 @@
 pragma solidity ^0.6.0;
 
-import "./SGoldToken.sol";
+import "./SToken.sol";
 
-contract SGoldExecutor {
+contract STokenExecutor {
 
-    SGoldToken private sGoldToken;
+    SToken private sGoldToken;
     address private owner;
     uint public limit;
 
     constructor (address _tokenAddress, uint _limit) public {
-        sGoldToken = SGoldToken(_tokenAddress);
+        sGoldToken = SToken(_tokenAddress);
 
         owner = msg.sender;
         limit = _limit;

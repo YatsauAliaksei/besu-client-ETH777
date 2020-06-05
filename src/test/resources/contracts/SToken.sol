@@ -2,7 +2,7 @@ pragma solidity ^0.6.0;
 
 import "./openzeppelin/token/ERC777/ERC777.sol";
 
-contract SGoldToken is ERC777 {
+contract SToken is ERC777 {
 
     address public owner;
     address[] private allowed;

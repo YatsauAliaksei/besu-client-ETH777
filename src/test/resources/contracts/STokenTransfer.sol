@@ -1,11 +1,11 @@
 pragma solidity ^0.6.0;
 
-import "./SGoldExecutor.sol";
+import "./STokenExecutor.sol";
 
-contract SGoldTransfer {
+contract STokenTransfer {
 
     address private issuer;
-    SGoldExecutor private sGoldExecutor;
+    STokenExecutor private sGoldExecutor;
 
     address private from;
     address private to;
@@ -13,7 +13,7 @@ contract SGoldTransfer {
     bool private burned = false;
 
     constructor (address executorAddress, address _from, address _to, uint _amount) public {
-        sGoldExecutor = SGoldExecutor(executorAddress);
+        sGoldExecutor = STokenExecutor(executorAddress);
 
         issuer = msg.sender;
         from = _from;

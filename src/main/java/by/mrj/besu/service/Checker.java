@@ -1,8 +1,7 @@
 package by.mrj.besu.service;
 
-import by.mrj.besu.gold.ContractService;
-import by.mrj.besu.gold.SGoldExecutorService;
-import by.mrj.besu.gold.SGoldTokenService;
+import by.mrj.besu.token.ContractService;
+import by.mrj.besu.token.STokenService;
 import by.mrj.besu.web3j.GodCredentials;
 import by.mrj.besu.web3j.Web3jClient;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ import java.math.BigInteger;
 public class Checker {
 
     private final GodCredentials credentials;
-    private final SGoldTokenService sGoldTokenService;
+    private final STokenService sTokenTokenService;
     private final AccountService accountService;
     private final Web3jClient web3jClient;
     private final ContractService contractService;
@@ -66,8 +65,8 @@ public class Checker {
 
     private void logBalance(String address) throws Exception {
         BigInteger ethBalance = getEthBalance(address);
-        BigInteger goldBalance = getGoldBalance(address);
-        log.info("\nAddress: {}\nBalance ETH: [{}], GoldToken: [{}]", address, ethBalance, goldBalance);
+        BigInteger tokenBalance = getTokenBalance(address);
+        log.info("\nAddress: {}\nBalance ETH: [{}], TokenToken: [{}]", address, ethBalance, tokenBalance);
     }
 
     private String createNewClient() {
@@ -79,8 +78,8 @@ public class Checker {
         return newClientAddress;
     }
 
-    private BigInteger getGoldBalance(String address) throws Exception {
-        return sGoldTokenService.getSGoldToken().balanceOf(address).send();
+    private BigInteger getTokenBalance(String address) throws Exception {
+        return sTokenTokenService.getSToken().balanceOf(address).send();
     }
 
     private BigInteger getEthBalance(String a) throws java.io.IOException {

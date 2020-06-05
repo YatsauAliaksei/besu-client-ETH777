@@ -9,7 +9,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "gold", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "token", ignoreUnknownFields = false)
 public class ApplicationProperties {
 
   private Wallet wallet;
